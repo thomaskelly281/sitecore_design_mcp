@@ -95,6 +95,13 @@ export async function POST(request: NextRequest) {
         } else {
           throw new Error('tools/list handler not found');
         }
+      } else if (body.method === 'prompts/list') {
+        const handler = getHandler('prompts/list');
+        if (handler) {
+          response = await handler({ params: body.params || {} });
+        } else {
+          throw new Error('prompts/list handler not found');
+        }
       } else if (body.method === 'tools/call') {
         const handler = getHandler('tools/call');
         if (handler) {
@@ -113,6 +120,7 @@ export async function POST(request: NextRequest) {
           protocolVersion: '2024-11-05',
           capabilities: {
             tools: {},
+            prompts: {},
           },
           serverInfo: {
             name: 'sitecore-design-mcp',

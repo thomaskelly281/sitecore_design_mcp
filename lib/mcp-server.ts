@@ -1,5 +1,5 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprotocol/sdk/types.js';
+import { ListToolsRequestSchema, CallToolRequestSchema, ListPromptsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import { processCopy, getAllRules, getRulesForUIContext, getRuleDefinitions, getRuleCategories } from './copywriter';
 
@@ -18,6 +18,7 @@ export function createMcpServer(): Server {
     {
       capabilities: {
         tools: {},
+        prompts: {},
       },
     }
   );
@@ -156,6 +157,53 @@ export function createMcpServer(): Server {
   handlers.set('tools/call', async (request: any) => {
     // HTTP transport passes: { params: { name: '...', arguments: {...} } }
     return handleToolCall(request);
+  });
+
+  // Register prompts to make tools more discoverable
+  server.setRequestHandler(ListPromptsRequestSchema, async () => {
+    return {
+      prompts: [
+        {
+          name: 'process_ui_copy',
+          description: 'Process UI copy text through the Sitecore copywriting rules',
+          arguments: [
+            {
+              name: 'text',
+              description: 'The UI copy text to process',
+              required: true,
+            },
+            {
+              name: 'context',
+              description: 'The UI context (button, dialog, form, etc.)',
+              required: false,
+            },
+          ],
+        },
+      ],
+    };
+  });
+
+  handlers.set('prompts/list', async () => {
+    return {
+      prompts: [
+        {
+          name: 'process_ui_copy',
+          description: 'Process UI copy text through the Sitecore copywriting rules',
+          arguments: [
+            {
+              name: 'text',
+              description: 'The UI copy text to process',
+              required: true,
+            },
+            {
+              name: 'context',
+              description: 'The UI context (button, dialog, form, etc.)',
+              required: false,
+            },
+          ],
+        },
+      ],
+    };
   });
 
   return server;
