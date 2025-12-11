@@ -1,4 +1,5 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import { processCopy, getAllRules, getRulesForUIContext, getRuleDefinitions, getRuleCategories } from './copywriter';
 
@@ -60,7 +61,7 @@ export function createMcpServer(): Server {
   ];
 
   // Register the tools list handler
-  server.setRequestHandler('tools/list', async () => {
+  server.setRequestHandler(ListToolsRequestSchema, async () => {
     return { tools: toolDefinitions };
   });
 
@@ -130,7 +131,7 @@ export function createMcpServer(): Server {
     throw new Error(`Unknown tool: ${name}`);
   };
 
-  server.setRequestHandler('tools/call', handleToolCall);
+  server.setRequestHandler(CallToolRequestSchema, handleToolCall);
   handlers.set('tools/call', handleToolCall);
 
   return server;
