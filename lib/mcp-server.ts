@@ -66,13 +66,16 @@ export function createMcpServer(): Server {
   });
 
   // Store the handler for HTTP access
-  handlers.set('tools/list', async () => {
+  handlers.set('tools/list', async (request: any) => {
+    // Return tools list in the format expected by MCP
     return { tools: toolDefinitions };
   });
 
   // Handle tool execution
   const handleToolCall = async (request: any) => {
-    const { name, arguments: args } = request.params;
+    // Extract params - handle both SDK format and HTTP transport format
+    const params = request.params || request;
+    const { name, arguments: args } = params;
 
     if (name === 'copywriter') {
       // Validate input with Zod
@@ -132,7 +135,11 @@ export function createMcpServer(): Server {
   };
 
   server.setRequestHandler(CallToolRequestSchema, handleToolCall);
-  handlers.set('tools/call', handleToolCall);
+  
+  // Store the handler for HTTP access - ensure it handles the request format correctly
+  handlers.set('tools/call', async (request: any) => {
+    return handleToolCall(request);
+  });
 
   return server;
 }

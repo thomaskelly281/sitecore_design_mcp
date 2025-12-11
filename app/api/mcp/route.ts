@@ -4,6 +4,21 @@ import { createMcpServer, getHandler } from '@/lib/mcp-server';
 // Initialize the MCP server instance (singleton)
 const mcpServer = createMcpServer();
 
+// CORS headers for MCP HTTP transport
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+  'Content-Type': 'application/json',
+};
+
+/**
+ * Handle OPTIONS for CORS preflight
+ */
+export async function OPTIONS(request: NextRequest) {
+  return NextResponse.json({}, { headers: corsHeaders });
+}
+
 /**
  * Handle MCP HTTP transport requests
  * Supports both GET (for server info) and POST (for JSON-RPC requests)
@@ -21,12 +36,12 @@ export async function GET(request: NextRequest) {
       capabilities: {
         tools: {},
       },
-    });
+    }, { headers: corsHeaders });
   } catch (error) {
     console.error('MCP GET error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }
@@ -50,7 +65,7 @@ export async function POST(request: NextRequest) {
             message: 'Invalid Request: jsonrpc must be "2.0"',
           },
         },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -64,7 +79,7 @@ export async function POST(request: NextRequest) {
             message: 'Invalid Request: method is required',
           },
         },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -88,7 +103,7 @@ export async function POST(request: NextRequest) {
           throw new Error('tools/call handler not found');
         }
       } else if (body.method === 'initialize') {
-        // Handle initialize request
+        // Handle initialize request - must return proper capabilities
         response = {
           protocolVersion: '2024-11-05',
           capabilities: {
@@ -109,7 +124,7 @@ export async function POST(request: NextRequest) {
               message: `Method not found: ${body.method}`,
             },
           },
-          { status: 404 }
+          { status: 404, headers: corsHeaders }
         );
       }
 
@@ -117,9 +132,10 @@ export async function POST(request: NextRequest) {
         jsonrpc: '2.0',
         id: body.id || null,
         result: response,
-      });
+      }, { headers: corsHeaders });
     } catch (handlerError) {
       // Handle errors from the handler
+      console.error('Handler error:', handlerError);
       return NextResponse.json(
         {
           jsonrpc: '2.0',
@@ -129,7 +145,7 @@ export async function POST(request: NextRequest) {
             message: handlerError instanceof Error ? handlerError.message : 'Internal error',
           },
         },
-        { status: 500 }
+        { status: 500, headers: corsHeaders }
       );
     }
   } catch (error) {
@@ -145,7 +161,7 @@ export async function POST(request: NextRequest) {
           message: error instanceof Error ? error.message : 'Parse error',
         },
       },
-      { status: 400 }
+      { status: 400, headers: corsHeaders }
     );
   }
 }
