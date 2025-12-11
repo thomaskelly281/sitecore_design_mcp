@@ -98,12 +98,17 @@ export async function POST(request: NextRequest) {
       } else if (body.method === 'tools/call') {
         const handler = getHandler('tools/call');
         if (handler) {
+          // Log the request for debugging
+          console.log('tools/call request:', JSON.stringify(body, null, 2));
+          // body.params should contain { name: '...', arguments: {...} }
           response = await handler({ params: body.params || {} });
+          console.log('tools/call response:', JSON.stringify(response, null, 2));
         } else {
           throw new Error('tools/call handler not found');
         }
       } else if (body.method === 'initialize') {
         // Handle initialize request - must return proper capabilities
+        // The tools capability indicates we support tools
         response = {
           protocolVersion: '2024-11-05',
           capabilities: {
@@ -114,6 +119,13 @@ export async function POST(request: NextRequest) {
             version: '0.1.0',
           },
         };
+      } else if (body.method === 'notifications/initialized') {
+        // Handle initialized notification (no response needed)
+        return NextResponse.json({
+          jsonrpc: '2.0',
+          id: body.id || null,
+          result: null,
+        }, { headers: corsHeaders });
       } else {
         return NextResponse.json(
           {

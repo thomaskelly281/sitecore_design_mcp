@@ -73,71 +73,88 @@ export function createMcpServer(): Server {
 
   // Handle tool execution
   const handleToolCall = async (request: any) => {
-    // Extract params - handle both SDK format and HTTP transport format
-    const params = request.params || request;
-    const { name, arguments: args } = params;
+    try {
+      // Extract params - handle both SDK format and HTTP transport format
+      // For HTTP: request = { params: { name: '...', arguments: {...} } }
+      // For SDK: request = { params: { name: '...', arguments: {...} } }
+      const params = request.params || request;
+      const name = params.name;
+      const args = params.arguments || {};
 
-    if (name === 'copywriter') {
-      // Validate input with Zod
-      const schema = z.object({
-        text: z.string(),
-        context: z.string().optional(),
-      });
+      if (!name) {
+        console.error('Tool call missing name. Params:', JSON.stringify(params, null, 2));
+        throw new Error('Tool name is required');
+      }
 
-      const validated = schema.parse(args);
+      console.log(`Calling tool: ${name} with arguments:`, JSON.stringify(args, null, 2));
 
-      // Process the copy through the copywriter agent
-      const result = await processCopy({
-        text: validated.text,
-        context: validated.context,
-      });
+      if (name === 'copywriter') {
+        // Validate input with Zod
+        const schema = z.object({
+          text: z.string(),
+          context: z.string().optional(),
+        });
 
-      return {
-        content: [
-          {
-            type: 'text',
-            text: JSON.stringify({
-              processedText: result.processedText,
-              originalText: result.originalText,
-              applied: result.applied,
-              validation: result.validation,
-              relevantRules: result.relevantRules,
-            }, null, 2),
-          },
-        ],
-      };
+        const validated = schema.parse(args);
+
+        // Process the copy through the copywriter agent
+        const result = await processCopy({
+          text: validated.text,
+          context: validated.context,
+        });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                processedText: result.processedText,
+                originalText: result.originalText,
+                applied: result.applied,
+                validation: result.validation,
+                relevantRules: result.relevantRules,
+              }, null, 2),
+            },
+          ],
+        };
+      }
+
+      if (name === 'get_copywriting_rules') {
+        // Validate input with Zod
+        const schema = z.object({
+          context: z.string().optional(),
+        });
+
+        const validated = schema.parse(args);
+
+        // Get rules based on context
+        const rules = validated.context 
+          ? getRulesForUIContext(validated.context)
+          : getAllRules();
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: rules,
+            },
+          ],
+        };
+      }
+
+      throw new Error(`Unknown tool: ${name}`);
+    } catch (error) {
+      // Log the error for debugging
+      console.error('Tool call error:', error);
+      throw error;
     }
-
-    if (name === 'get_copywriting_rules') {
-      // Validate input with Zod
-      const schema = z.object({
-        context: z.string().optional(),
-      });
-
-      const validated = schema.parse(args);
-
-      // Get rules based on context
-      const rules = validated.context 
-        ? getRulesForUIContext(validated.context)
-        : getAllRules();
-
-      return {
-        content: [
-          {
-            type: 'text',
-            text: rules,
-          },
-        ],
-      };
-    }
-
-    throw new Error(`Unknown tool: ${name}`);
   };
 
   server.setRequestHandler(CallToolRequestSchema, handleToolCall);
   
   // Store the handler for HTTP access - ensure it handles the request format correctly
   handlers.set('tools/call', async (request: any) => {
+    // HTTP transport passes: { params: { name: '...', arguments: {...} } }
     return handleToolCall(request);
   });
 
