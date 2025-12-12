@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "sitecore-design": {
+      "command": "node",
+      "args": ["C:/Users/kell_/Documents/GitHub/sitecore_design_mcp/dist/src/index.js"]
+    }
+  }
+}

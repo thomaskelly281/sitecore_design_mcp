@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "sitecore-design": {
+      "command": "node",
+      "args": ["dist/src/index.js"],
+      "cwd": "."
+    }
+  }
+}
+
