@@ -1,12 +1,10 @@
 {
   "version": 2,
   "installCommand": "npm install",
+  "buildCommand": "npm run build",
   "framework": null,
-  "buildCommand": null,
-  "outputDirectory": null,
   "functions": {
     "api/mcp.ts": {
-      "runtime": "@vercel/node",
       "memory": 1024,
       "maxDuration": 30
     }
