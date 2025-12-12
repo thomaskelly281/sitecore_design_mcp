@@ -9,6 +9,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { readFileSync, existsSync, readdirSync } from "fs";
 import { join } from "path";
+// @ts-expect-error: pdf-parse doesn't have proper TypeScript types
 import pdfParse from "pdf-parse";
 
 // Configuration
@@ -16,6 +17,7 @@ const SERVER_NAME = "sitecore-design-mcp-server";
 const SERVER_VERSION = "1.0.0";
 
 // Path to document directories (relative to project root in Vercel)
+// In Vercel, process.cwd() points to the project root
 const DOCS_DIR = join(process.cwd(), "docs");
 const CSV_DIR = join(DOCS_DIR, "csv");
 const PDF_DIR = join(DOCS_DIR, "pdf");
@@ -390,14 +392,15 @@ async function executeTool(name: string, args: Record<string, unknown>): Promise
  * Handle MCP JSON-RPC requests
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept");
+  try {
+    // CORS headers
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept");
 
-  if (req.method === "OPTIONS") {
-    return res.status(204).end();
-  }
+    if (req.method === "OPTIONS") {
+      return res.status(204).end();
+    }
 
   if (req.method === "GET") {
     return res.status(200).json({
@@ -536,5 +539,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
   }
 
-  return res.status(405).json({ error: "Method not allowed" });
+    return res.status(405).json({ error: "Method not allowed" });
+  } catch (error) {
+    console.error("Unhandled error in MCP handler:", error);
+    return res.status(500).json({
+      jsonrpc: "2.0",
+      id: req.body?.id || null,
+      error: {
+        code: -32603,
+        message: error instanceof Error ? error.message : "Internal server error",
+      },
+    });
+  }
 }
