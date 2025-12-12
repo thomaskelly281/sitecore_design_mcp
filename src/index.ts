@@ -6,7 +6,6 @@ import { z } from "zod";
 import { readFileSync, existsSync, readdirSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
-// @ts-expect-error: No types for 'pdf-parse'
 import pdfParse from "pdf-parse";
 
 const __filename = fileURLToPath(import.meta.url);
