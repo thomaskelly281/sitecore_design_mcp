@@ -1,0 +1,8 @@
+# Place your CSV files in this directory
+# The MCP server will automatically detect and index them
+
+# Example:
+# - components.csv
+# - design-tokens.csv
+# - color-palette.csv
+

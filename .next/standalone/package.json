@@ -1,0 +1,45 @@
+{
+  "name": "sitecore-design-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP Server with RAG capabilities for Sitecore Design documentation",
+  "scripts": {
+    "build": "next build",
+    "build:stdio": "tsc",
+    "dev": "next dev",
+    "start": "next start",
+    "start:stdio": "node dist/src/index.js",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "mcp",
+    "rag",
+    "sitecore",
+    "design",
+    "pdf"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.11.0",
+    "next": "^15.0.0",
+    "pdf-parse": "^1.1.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/pdf-parse": "^1.1.4",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^15.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
+

@@ -1,0 +1,8 @@
+# Place your PDF files in this directory
+# The MCP server will automatically detect and index them
+
+# Example:
+# - sitecore-design-guide.pdf
+# - component-library.pdf
+# - branding-guidelines.pdf
+

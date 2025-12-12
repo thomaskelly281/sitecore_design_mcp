@@ -1,0 +1,45 @@
+Category,Rule,Context / details,Source
+General Style,Voice,"Write simply, directly, and correctly. Do not explain things that go without saying. Avoid repetition. ",General guidelines
+General Style,Tone,"Friendly but not chatty. Find the middle ground between ""corporate/cold"" and ""fluff"". ",General guidelines
+General Style,Vocabulary,"Use short, plain, common words. Do not invent words or use slang. ",General guidelines
+General Style,Self-contained text,"Individual elements (headings, buttons) must stand on their own without surrounding context. ",General guidelines
+Grammar,Language,"Follow American English rules (Merriam-Webster dictionary). Use American spelling (e.g., ""Color"" not ""Colour""). ",General guidelines
+Grammar,Word Choice,"Use ""fill out a form"" instead of ""fill in"". ",General guidelines
+Grammar,Plurals,Use the plural form for items that can be singular or plural. Do not use brackets like Asset(s).,General guidelines
+Grammar,Tense,Use present tense to describe product behavior. Avoid future tense for how the product always acts.,General guidelines
+Capitalization,Sentence case,"Capitalize only the first word of sentences, headings, buttons, and labels (except proper nouns). ",General guidelines
+Capitalization,Product Names,"Preserve capitalization of proper names and abbreviations (e.g., ""API key"", ""Content Hub ONE""). ",General guidelines
+Capitalization,Styling,Do not hard-code uppercase text. Use CSS (text-transform: uppercase) if stylistic uppercase is needed.,General guidelines
+Punctuation,Solo sentences,"Do not use periods on solo sentences (headers, buttons, toasts, inputs, tooltips). ",General guidelines
+Punctuation,Body text,End all sentences in body text (persistent text in page/dialog body) with a period.,General guidelines
+Punctuation,Links,Use a period after a solo sentence if it is followed by a link.,General guidelines
+Punctuation,Exclamations,Avoid exclamation points. Use only one if necessary for sincere congratulations.,General guidelines
+Numbers,Numerals,"Use numerals instead of words (e.g., ""3 messages""). Exception: Use words when mixing numbers (e.g., ""Enter two 3s""). ",General guidelines
+Units,Spacing,"Leave a space between value and unit (e.g., ""123 MB""). Exception: No space for single-character units (e.g., ""1080p"", ""5d""). ",General guidelines
+Truncation,Ellipsis,Ensure truncated text ends with an ellipsis and provide the full text in a tooltip.,General guidelines
+Buttons,Labels,"Describe the specific action (concise, 1-2 words). Do not use ending punctuation. ",Button
+Buttons,Creation,"Use ""Create {thing}"" (e.g., ""Create widget""). Avoid ""New {thing}"" or ""Create new {thing}"". ",Button
+Buttons,Create vs. Add,Use Create if the opposite is Destroy/Delete (high stakes). Use Add if the opposite is Remove (low stakes).,Button
+Buttons,Content Hub,"For Content Hub, creation buttons use the format + {ThingName} to avoid translation issues. ",Button
+Dialogs,Consistency,"The dialog title must match the button clicked to open it (e.g., Button ""Edit widget"" -> Title ""Edit widget""). ","Dialog, Modal..."
+Dialogs,Decision Buttons,"Use explicit verbs for buttons (e.g., ""Enable"", ""Delete""). Avoid ambiguous text like ""Yes"", ""No"", or ""OK"". ","Dialog, Modal..."
+Dialogs,Unsaved Changes,"Use exactly two options: 1. ""Keep editing"" (return to form), 2. ""Discard"" (lose changes). ","Dialog, Modal..."
+Dialogs,Info Dialogs,"Use ""Dismiss"" or ""OK"" to acknowledge. Avoid ""Cancel"" on purely informative dialogs. ","Dialog, Modal..."
+Dialogs,Terminology,"""Close"" closes the dialog. ""Cancel"" cancels the actions/settings within the dialog. ","Dialog, Modal..."
+Alerts,Content,Limit to 1–2 sentences. Link to documentation if more detail is needed.,Alert
+Alerts,Structure,"Avoid ""Title / Description"" structure; it creates redundancy. ",Alert
+Forms,Field Labels,Use a word or phrase (not a sentence). Do not use punctuation (no colons).,Form field
+Forms,Helper Text,Use helper text generously to provide context or instructions.,Form field
+Forms,Placeholders,Avoid placeholder text inside input fields. Exception: Search or filter boxes.,Form field
+Forms,Errors,Explain the error and how to fix it immediately.,Form field
+Checkboxes,Labels,"Use active, positive wording (e.g., ""Send me a copy""). Avoid negations (""Don't send"") or questions. ","Checkbox, Radio"
+Checkboxes,Punctuation,Do not add a period at the end of a checkbox label.,"Checkbox, Radio"
+Checkboxes,Grouping,Group labels should explain the purpose. Option labels should focus on the differences between choices.,"Checkbox, Radio"
+Date & Time,Date Format,"Use US order: Month Day, Year (e.g., Dec 6, 2020). ",Date and time
+Date & Time,Months,"Write out the month, abbreviated to 3 letters (e.g., ""Dec""). ",Date and time
+Date & Time,Day Format,"Do not use leading zeros (use ""6"" not ""06""). Do not use ordinals (use ""Dec 6"" not ""Dec 6th""). ",Date and time
+Date & Time,Time Format,"Use 12-hour clock with AM/PM (e.g., 2:23 PM). ",Date and time
+API Messages,Structure,Part 1: Location (code generated). Part 2: Human-readable explanation specific to the occurrence.,API messages
+API Messages,Detail,"Focus on the error itself, not user action. Include an example if applicable. ",API messages
+API Messages,Formatting,Start with an initial capital letter. End with a standard period.,API messages
+Inline Help,Usage,Use to clarify unfamiliar concepts or explain a task flow.,Inline help

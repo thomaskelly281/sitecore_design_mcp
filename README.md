@@ -23,17 +23,21 @@ A Model Context Protocol (MCP) server with RAG (Retrieval-Augmented Generation) 
 
 ```
 sitecore-design-mcp-server/
-├── api/
-│   └── mcp.ts              # Vercel serverless function
+├── app/
+│   ├── api/
+│   │   └── mcp/
+│   │       └── route.ts    # Next.js API route for MCP server
+│   ├── layout.tsx          # Next.js root layout
+│   └── page.tsx            # Home page
 ├── docs/
 │   ├── csv/                # Your CSV documents go here
 │   │   └── *.csv
 │   └── pdf/                # Your PDF documents go here
 │       └── *.pdf
 ├── src/
-│   ├── index.ts            # STDIO MCP server (local development)
-│   └── http-server.ts      # HTTP server utilities
+│   └── index.ts            # STDIO MCP server (local development)
 ├── package.json
+├── next.config.js          # Next.js configuration
 ├── tsconfig.json
 ├── vercel.json
 └── README.md
@@ -80,17 +84,21 @@ docs/
 
 ## Local Development
 
-### Running with STDIO (for Claude Desktop, Cursor, etc.)
-
-```bash
-npm run build
-node dist/index.js
-```
-
-### Development Mode
+#### Next.js Development Server
 
 ```bash
 npm run dev
+```
+
+This will start the Next.js development server at `http://localhost:3000`. The MCP API will be available at `http://localhost:3000/api/mcp`.
+
+#### Running with STDIO (for Claude Desktop, Cursor, etc.)
+
+For local MCP client connections, you can still use the STDIO server:
+
+```bash
+npm run build:stdio  # Builds the src/index.ts file
+npm run start:stdio  # Runs the STDIO server
 ```
 
 ## Deployment to Vercel
