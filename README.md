@@ -1,166 +1,241 @@
-# Sitecore Design MCP - Copywriter Agent
+# Sitecore Design MCP Server
 
-A Model Context Protocol (MCP) server with a copywriter agent that enforces copywriting rules for UI text generation. Deployed on Vercel with HTTP transport support.
-
-## Overview
-
-This MCP server provides a `copywriter` tool that processes UI copy text and automatically applies predefined copywriting rules. The agent is designed to be called whenever UI copy is generated or when users ask questions about UI text.
+A Model Context Protocol (MCP) server with RAG (Retrieval-Augmented Generation) capabilities for Sitecore Design documentation. This server allows AI assistants to search and retrieve information from PDF documents.
 
 ## Features
 
-- **Copywriter Agent**: Automatically enforces copywriting rules on UI text
-- **Modular Rules System**: Easy-to-add rules configuration
-- **HTTP Transport**: Compatible with MCP HTTP client specification
-- **Vercel Deployment**: Pre-configured for seamless Vercel deployment
-- **Type-Safe**: Full TypeScript support with Zod validation
+- 🔍 **Search Documentation**: Keyword search across CSV and PDF documents
+- 📄 **Full Document Access**: Retrieve complete document content
+- 📋 **Document Listing**: View all available CSV and PDF documentation
+- 📊 **Document Summaries**: Get quick overviews of documents
+- 📁 **Multi-format Support**: Works with both CSV and PDF files
+
+## Available Tools
+
+| Tool | Description |
+|------|-------------|
+| `search_documentation` | Search for relevant information using keywords |
+| `get_document_content` | Retrieve the full text of a specific PDF |
+| `list_documents` | List all available PDF documents |
+| `get_document_summary` | Get a summary and preview of a document |
 
 ## Project Structure
 
 ```
-sitecore_design_mcp/
-├── app/
-│   └── api/
-│       └── mcp/
-│           └── route.ts         # MCP HTTP endpoint
-├── lib/
-│   ├── mcp-server.ts            # MCP server setup
-│   └── copywriter/
-│       ├── index.ts             # Copywriter agent interface
-│       ├── rules.ts             # Copywriting rules (ADD YOUR RULES HERE)
-│       └── processor.ts         # Rule processing logic
-└── ...
+sitecore-design-mcp-server/
+├── api/
+│   └── mcp.ts              # Vercel serverless function
+├── docs/
+│   ├── csv/                # Your CSV documents go here
+│   │   └── *.csv
+│   └── pdf/                # Your PDF documents go here
+│       └── *.pdf
+├── src/
+│   ├── index.ts            # STDIO MCP server (local development)
+│   └── http-server.ts      # HTTP server utilities
+├── package.json
+├── tsconfig.json
+├── vercel.json
+└── README.md
 ```
 
 ## Setup
 
-### 1. Install Dependencies
+### Prerequisites
+
+- Node.js 18 or later
+- npm or pnpm
+
+### Installation
 
 ```bash
+# Clone the repository
+git clone https://github.com/YOUR_USERNAME/sitecore-design-mcp-server.git
+cd sitecore-design-mcp-server
+
+# Install dependencies
 npm install
+
+# Build the project
+npm run build
 ```
 
-### 2. Add Your Copywriting Rules
+### Adding Documents
 
-Edit `lib/copywriter/rules.ts` to add your copywriting rules. Each rule is a function that takes a string and returns a processed string:
+Place your documents in the appropriate subdirectory:
 
-```typescript
-export const copywritingRules: CopywritingRule[] = [
-  (text: string) => {
-    // Your rule logic here
-    return processedText;
-  },
-  // Add more rules...
-];
+```
+docs/
+├── csv/
+│   ├── components.csv
+│   ├── design-tokens.csv
+│   └── color-palette.csv
+└── pdf/
+    ├── sitecore-design-guide.pdf
+    ├── component-library.pdf
+    └── branding-guidelines.pdf
 ```
 
-### 3. Local Development
+**CSV Format:** The first row should contain headers. Each subsequent row represents a record that will be searchable.
+
+## Local Development
+
+### Running with STDIO (for Claude Desktop, Cursor, etc.)
+
+```bash
+npm run build
+node dist/index.js
+```
+
+### Development Mode
 
 ```bash
 npm run dev
 ```
 
-The MCP server will be available at `http://localhost:3000/api/mcp`
+## Deployment to Vercel
 
-### 4. Deploy to Vercel
-
-#### Option A: Using Vercel CLI
+### Option 1: Deploy via Vercel CLI
 
 ```bash
+# Install Vercel CLI
 npm install -g vercel
+
+# Login to Vercel
+vercel login
+
+# Deploy
 vercel
 ```
 
-#### Option B: Using Git Integration
+### Option 2: Deploy via GitHub
 
-1. Push your code to a Git repository (GitHub, GitLab, etc.)
-2. Import the project in the Vercel dashboard
-3. Vercel will automatically detect Next.js and deploy
+1. Push your code to GitHub
+2. Connect your repository to Vercel
+3. Vercel will automatically deploy on push
 
-## Configuration
+### After Deployment
 
-### Environment Variables
+Your MCP server will be available at:
+- **Endpoint**: `https://your-project.vercel.app/api/mcp`
+- **Alias**: `https://your-project.vercel.app/mcp`
 
-Copy `.env.example` to `.env` and add any required environment variables:
+## Client Configuration
 
-```bash
-cp .env.example .env
-```
+### Claude Desktop
 
-### Cursor Integration
-
-To use this MCP server with Cursor, add the following to your Cursor MCP configuration:
+Add to your Claude Desktop config (`~/.config/claude/claude_desktop_config.json` on macOS/Linux or `%APPDATA%\Claude\claude_desktop_config.json` on Windows):
 
 ```json
 {
   "mcpServers": {
-    "sitecore-design-mcp": {
-      "url": "https://your-deployment.vercel.app/api/mcp",
-      "transport": "http"
+    "sitecore-design": {
+      "command": "node",
+      "args": ["/path/to/sitecore-design-mcp-server/dist/index.js"]
     }
   }
 }
 ```
 
-Replace `https://your-deployment.vercel.app` with your actual Vercel deployment URL.
+### Cursor
 
-## Usage
-
-The `copywriter` tool is automatically available when the MCP server is connected. It can be called:
-
-1. **Automatically**: When UI copy text is generated
-2. **Explicitly**: When users ask questions about UI text
-
-### Tool Parameters
-
-- `text` (required): The text to process through copywriting rules
-- `context` (optional): Context about where the copy will be used (e.g., "button label", "error message")
-
-### Example Tool Call
+Add to your Cursor MCP settings:
 
 ```json
 {
-  "method": "tools/call",
-  "params": {
-    "name": "copywriter",
-    "arguments": {
-      "text": "click here to continue",
-      "context": "button label"
+  "mcpServers": {
+    "sitecore-design": {
+      "command": "node",
+      "args": ["/path/to/sitecore-design-mcp-server/dist/index.js"]
     }
   }
 }
 ```
 
-## Adding Rules
+### Remote (Vercel) Configuration
 
-To add new copywriting rules:
+For remote MCP server access via HTTP:
 
-1. Open `lib/copywriter/rules.ts`
-2. Add your rule function to the `copywritingRules` array
-3. Add corresponding metadata to `ruleMetadata` array
-4. Rules are applied in sequence, so order matters
-
-Example rule:
-
-```typescript
-export const copywritingRules: CopywritingRule[] = [
-  // Existing rules...
-  
-  // New rule: Capitalize first letter
-  (text: string) => {
-    if (!text) return text;
-    return text.charAt(0).toUpperCase() + text.slice(1);
-  },
-];
+```json
+{
+  "mcpServers": {
+    "sitecore-design": {
+      "url": "https://your-project.vercel.app/api/mcp"
+    }
+  }
+}
 ```
+
+## API Usage
+
+### GET /api/mcp
+
+Returns server information and available tools.
+
+### POST /api/mcp
+
+Send JSON-RPC 2.0 requests:
+
+```bash
+# Initialize
+curl -X POST https://your-project.vercel.app/api/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}'
+
+# List tools
+curl -X POST https://your-project.vercel.app/api/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}'
+
+# Search documentation
+curl -X POST https://your-project.vercel.app/api/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"search_documentation","arguments":{"query":"button component"}}}'
+
+# List documents
+curl -X POST https://your-project.vercel.app/api/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"list_documents","arguments":{}}}'
+```
+
+## Best Practices
+
+### Security
+
+- Validate all file paths to prevent directory traversal
+- Use environment variables for sensitive configuration
+- Implement rate limiting in production
+
+### Performance
+
+- PDFs are cached in memory after first parse
+- Use specific filenames when possible to reduce search scope
+- Consider document size limits for serverless environments
+
+### Logging
+
+- Logs are written to stderr to avoid interfering with STDIO protocol
+- Use structured logging in production
 
 ## Development
 
-### Scripts
+### Type Checking
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint
+```bash
+npm run typecheck
+```
+
+### Linting
+
+```bash
+npm run lint
+```
+
+## References
+
+- [Model Context Protocol Documentation](https://modelcontextprotocol.io/)
+- [MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk)
+- [Vercel MCP Deployment Guide](https://vercel.com/docs/mcp/deploy-mcp-servers-to-vercel)
 
 ## License
 
